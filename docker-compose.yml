@@ -1,0 +1,46 @@
+version: "3.7"
+services:
+  project_test_liveecommerce:
+    build:
+      args:
+        user: moizes
+        uid: 1000
+      context: .
+      dockerfile: Dockerfile
+    image: moizesdocker/php74fpm:1.0
+    container_name: project_test_liveecommerce-app
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www/html/project_Test_Liveecommerce
+    ports:
+      - 8061:8000
+    restart: unless-stopped
+    # To create/change a root password in a running container: docker exec -itu root {containerName} passwd
+    #command: composer install
+    # command: composer update
+    #command: php -S 0.0.0.0:8000
+    environment:
+      SERVICE_NAME: project_test_liveecommerce-app
+      SERVICE_TAGS: dev
+      #REDIS_HOST: 'redis'
+      #MYSQL_HOST: 'mysql_2db'      
+    volumes:
+      - ./:/var/www/html/project_Test_Liveecommerce
+    #external_links:
+      #- mysql_db2:mysql_db2    
+      #- redis:redis
+    networks:
+      allapps_default:
+        ipv4_address: 192.168.100.61
+  
+  phpunit:
+    image: moizesdocker/php74fpm:1.0
+    restart: 'no'
+    volumes:
+      - ./:/var/www/html/project_Test_Liveecommerce
+    working_dir: /var/www/html/project_Test_Liveecommerce
+    entrypoint: vendor/bin/phpunit
+
+networks:
+  allapps_default:        
+      external: true
